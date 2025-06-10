@@ -9,6 +9,10 @@ weight_units = {
     'Тонна': 1000, 'Килограмм': 1, 'Грамм': 0.001, 'Центнер': 100,
     'Фунт': 0.45359237, 'Унция': 0.0283495
 }
+time_units = {
+    'Час': 60,'Секунда': 0.016667, 'Минута': 1, '1 сутки':1440,
+    '1 неделя': 10080, '1 месяц': 43829.1, '1 год': 525960
+}
 
 class ConverterApp:
     def __init__(self, root):
@@ -42,6 +46,7 @@ class ConverterApp:
         ttk.Label(type_frame, text='Выберите тип единиц:', font=('Arial', 11, 'bold')).grid(row=0, column=0, columnspan=2)
         ttk.Radiobutton(type_frame, text='Длина', variable=self.unit_type, value='Длина', command=self.update_units).grid(row=1, column=0, padx=5)
         ttk.Radiobutton(type_frame, text='Вес', variable=self.unit_type, value='Вес', command=self.update_units).grid(row=1, column=1, padx=5)
+        ttk.Radiobutton(type_frame, text='Время', variable=self.unit_type, value='Время', command=self.update_units).grid(row=1, column=2, padx=5)
 
         ttk.Label(main_frame, text='Введите значение:').grid(row=1, column=0, sticky='w')
         ttk.Entry(main_frame, textvariable=self.input_value, font=('Arial', 10)).grid(row=1, column=1, columnspan=2, sticky='ew', pady=3)
@@ -65,15 +70,15 @@ class ConverterApp:
         result_entry = ttk.Entry(main_frame, textvariable=self.result_value, state='readonly', font=('Arial', 10))
         result_entry.grid(row=5, column=1, columnspan=2, sticky='ew', pady=3)
 
-        main_frame.columnconfigure(1, weight=1)
-
         self.update_units()
 
     def update_units(self):
         if self.unit_type.get() == 'Длина':
             units = list(length_units.keys())
-        else:
+        elif self.unit_type.get() == 'Вес':
             units = list(weight_units.keys())
+        else:
+            units = list(time_units.keys())
         self.from_combobox.config(values=units)
         self.to_combobox.config(values=units)
         self.from_unit.set(units[0] if units else '')
@@ -86,22 +91,32 @@ class ConverterApp:
         self.to_unit.set(current_from)
 
     def convert(self):
-        input_str = self.input_value.get().replace(',', '.').strip()
-        if not input_str:
-            self.result_value.set('Введите число')
-            return
-        value = float(input_str)
-        from_unit = self.from_unit.get()
-        to_unit = self.to_unit.get()
-        unit_type = self.unit_type.get()
+        try:
+            input_str = self.input_value.get().replace(',', '.').strip()
+            if not input_str:
+                self.result_value.set('Введите число')
+                return
+            value = float(input_str)
+            from_unit = self.from_unit.get()
+            to_unit = self.to_unit.get()
+            unit_type = self.unit_type.get()
 
-        if unit_type == 'Длина':
-            coeff = length_units[from_unit] / length_units[to_unit]
-        else:
-            coeff = weight_units[from_unit] / weight_units[to_unit]
+            if unit_type == 'Длина':
+                coeff = length_units[from_unit] / length_units[to_unit]
+            elif unit_type == 'Вес':
+                coeff = weight_units[from_unit] / weight_units[to_unit]
+            else:
+                coeff = time_units[from_unit] /time_units[to_unit]
 
-        result = value * coeff
-        self.result_value.set(f'{result:.3f}')
+            result = value * coeff
+            self.result_value.set(f'{result:.3f}')
+        except ValueError:
+            self.result_value.set('Ошибка: неверный формат числа')
+        except KeyError:
+            self.result_value.set('Ошибка: выберите единицы измерения')
+        except Exception as e:
+            self.result_value.set(f'Ошибка: {str(e)}')
+
 
 if __name__ == '__main__':
     root = tk.Tk()
