@@ -65,10 +65,12 @@ class ConverterApp:
         btn_frame = ttk.Frame(main_frame)
         btn_frame.grid(row=4, column=0, columnspan=3, pady=15)
         ttk.Button(btn_frame, text='Перевести', command=self.convert).grid(row=0, column=0, padx=5, ipadx=20)
+        ttk.Button(btn_frame, text='Очистить', command=self.clear).grid(row=0, column=1, padx=5, ipadx=20)
 
         ttk.Label(main_frame, text='Результат:').grid(row=5, column=0, sticky='w')
         result_entry = ttk.Entry(main_frame, textvariable=self.result_value, state='readonly', font=('Arial', 10))
         result_entry.grid(row=5, column=1, columnspan=2, sticky='ew', pady=3)
+        result_entry.bind('<Double-Button-1>', self.copy_result)
 
         self.update_units()
 
@@ -112,11 +114,16 @@ class ConverterApp:
             self.result_value.set(f'{result:.3f}')
         except ValueError:
             self.result_value.set('Ошибка: неверный формат числа')
-        except KeyError:
-            self.result_value.set('Ошибка: выберите единицы измерения')
-        except Exception as e:
-            self.result_value.set(f'Ошибка: {str(e)}')
 
+    def clear(self):
+        self.input_value.set('')
+        self.result_value.set('')
+
+    def copy_result(self,event):
+        result = self.result_value.get()
+        if result:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(result)
 
 if __name__ == '__main__':
     root = tk.Tk()
