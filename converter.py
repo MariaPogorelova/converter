@@ -15,8 +15,8 @@ time_units = {
 }
 
 class ConverterApp:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self):
+        self.root = tk.Tk()
         self.root.title('Конвертер единиц измерения')
         self.root.geometry('400x300')
         self.root.resizable(False, False)
@@ -126,6 +126,5 @@ class ConverterApp:
             self.root.clipboard_append(result)
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    app = ConverterApp(root)
-    root.mainloop()
+    app = ConverterApp()
+    app.root.mainloop()
