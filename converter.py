@@ -84,7 +84,7 @@ class ConverterApp:
         self.from_combobox.config(values=units)
         self.to_combobox.config(values=units)
         self.from_unit.set(units[0] if units else '')
-        self.to_unit.set(units[1] if len(units) > 1 else (units[0] if units else ''))
+        self.to_unit.set(units[1] if units else '')
 
     def swap_units(self):
         current_from = self.from_unit.get()
